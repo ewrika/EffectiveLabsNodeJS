@@ -3,10 +3,11 @@ const Author = require("../models/author");
 const Genre = require("../models/genre");
 const BookInstance = require("../models/bookinstance");
 
+const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  // Получаем информацию о количестве книг, экземпляров книг, авторов и жанров (параллельно)
+  // Get details of books, book instances, authors and genre counts (in parallel)
   const [
     numBooks,
     numBookInstances,
@@ -31,18 +32,15 @@ exports.index = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display list of all Books.
-exports.book_list = function (req, res, next) {
-  Book.find({}, "title author")
+// Display list of all books.
+exports.book_list = asyncHandler(async (req, res, next) => {
+  const allBooks = await Book.find({}, "title author")
+    .sort({ title: 1 })
     .populate("author")
-    .exec(function (err, list_books) {
-      if (err) {
-        return next(err);
-      }
-      //Successful, so render
-      res.render("book_list", { title: "Book List", book_list: list_books });
-    });
-};
+    .exec();
+
+  res.render("book_list", { title: "Book List", book_list: allBooks });
+});
 
 // Display detail page for a specific book.
 exports.book_detail = asyncHandler(async (req, res, next) => {
@@ -65,3 +63,33 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
     book_instances: bookInstances,
   });
 });
+
+// Display book create form on GET.
+exports.book_create_get = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book create GET");
+};
+
+// Handle book create on POST.
+exports.book_create_post = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book create POST");
+};
+
+// Display book delete form on GET.
+exports.book_delete_get = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book delete GET");
+};
+
+// Handle book delete on POST.
+exports.book_delete_post = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book delete POST");
+};
+
+// Display book update form on GET.
+exports.book_update_get = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book update GET");
+};
+
+// Handle book update on POST.
+exports.book_update_post = function (req, res) {
+  res.send("NOT IMPLEMENTED: Book update POST");
+};

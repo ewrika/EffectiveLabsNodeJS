@@ -1,25 +1,19 @@
-var Author = require("../models/author");
+const Author = require("../models/author");
 const Book = require("../models/book");
+
+const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 
 // Display list of all Authors.
-exports.author_list = function (req, res, next) {
-  Author.find()
-    .sort([["family_name", "ascending"]])
-    .exec(function (err, list_authors) {
-      if (err) {
-        return next(err);
-      }
-      //Successful, so render
-      res.render("author_list", {
-        title: "Author List",
-        author_list: list_authors,
-      });
-    });
-};
+exports.author_list = asyncHandler(async (req, res, next) => {
+  const allAuthors = await Author.find().sort({ family_name: 1 }).exec();
+  res.render("author_list", {
+    title: "Author List",
+    author_list: allAuthors,
+  });
+});
 
-
-// Показать подробную страницу для данного автора.
+// Display detail page for a specific Author.
 exports.author_detail = asyncHandler(async (req, res, next) => {
   // Get details of author and all their books (in parallel)
   const [author, allBooksByAuthor] = await Promise.all([
@@ -40,6 +34,7 @@ exports.author_detail = asyncHandler(async (req, res, next) => {
     author_books: allBooksByAuthor,
   });
 });
+
 
 
 // Показать форму создания автора по запросу GET.
